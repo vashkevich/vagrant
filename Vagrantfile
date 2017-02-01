@@ -5,51 +5,41 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
+
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
+	config.vm.define "nginx" do |nginx| 
+		nginx.vm.box = "vashkevich"
+		nginx.vm.hostname = "nginx"
+		nginx.vm.network :private_network, ip: "172.27.10.59"
+		nginx.vm.synced_folder "/sharersync", "/sharehost1", type:"rsync"
 
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://atlas.hashicorp.com/search.
-  
-  config.vm.define "nginx" do |nginx| 
-	nginx.vm.box = "vashkevich"
-	nginx.vm.hostname = "nginx"
-	nginx.vm.network :private_network, ip: "172.27.10.59"
-	nginx.vm.synced_folder "/nfsshare", "/nfssharehost", type:"rsync"
-	 #   :nfs => true,
-	 #   :linux__nfs_options => ['rw','no_subtree_check','all_squash','async']
-
-	nginx.vm.provider :virtualbox do |vb|
-    vb.customize [
-      "modifyvm", :id,
-      "--memory", "2048",
-      "--natdnshostresolver1", "on",
-	"--name","nginx-srv"	
-	 ]
+		nginx.vm.provider :virtualbox do |vb|
+	vb.customize [
+		"modifyvm", :id,
+		"--memory", "2048",
+		"--natdnshostresolver1", "on",
+		"--name","nginx-srv"	
+	 	]
   	end
 	nginx.vm.provision :shell, path: "nginx_start.sh"
- end
+    end
   
-    config.vm.define "tomcat" do |tomcat|
-        tomcat.vm.box = "vashkevich"
-	tomcat.vm.hostname = "tomcat"
-        tomcat.vm.network :private_network, ip: "172.27.10.60"
-	config.vm.synced_folder "/nfsshare", "/nfssharehost"
-	#    :nfs => true,
-	#    :linux__nfs_options => ['rw','no_subtree_check','all_squash','async']
+	config.vm.define "tomcat" do |tomcat|
+        	tomcat.vm.box = "vashkevich"
+		tomcat.vm.hostname = "tomcat"
+        	tomcat.vm.network :private_network, ip: "172.27.10.60"
+        	tomcat.vm.synced_folder "/share", "/sharehost2"
      
-	tomcat.vm.provider :virtualbox do |vb|
-    vb.customize [
-      "modifyvm", :id,
-      "--memory", "4096",
-      "--natdnshostresolver1", "on",   
-	"--name","tomcat"	
- 	]
-  end
+		tomcat.vm.provider :virtualbox do |vb|
+	vb.customize [
+		"modifyvm", :id,
+		"--memory", "4096",
+		"--natdnshostresolver1", "on",   
+		"--name","tomcat"	
+ 		]
+     	end
 	config.vm.provision :shell, path: "tomcat_start.sh"
-end
+    end
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs

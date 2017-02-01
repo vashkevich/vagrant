@@ -13,28 +13,26 @@
 #	sudo export JRE_HOME=/opt/jdk1.8.0_121/jre
 #	sudo export PATH=$PATH:/opt/jdk1.8.0_121/bin:/opt/jdk1.8.0_121/jre/bin
 	
+	echo "Set firewall rule"
 	sudo iptables -I INPUT -p tcp --dport 8080 -m state --state NEW -j ACCEPT
+	echo "Reload firewall"
 	sudo /etc/init.d/iptables restart
-	sudo yum -y install epel-release
-	sudo yum -y install java
+	echo "Install Java"
+	sudo yum -y install java >/dev/null
+	echo "Make directory for tomcat"
 	sudo mkdir /usr/local/tomcat/
-	sudo cd /usr/local/tomcat/
-	sudo wget http://ftp.byfly.by/pub/apache.org/tomcat/tomcat-8/v8.5.11/bin/apache-tomcat-8.5.11.tar.gz -d /usr/local/tomcat >/dev/null
+	echo "Set vagrant as the owner /usr/local/tomcat/"
+        sudo chown -R vagrant:vagrant /usr/local/tomcat/
+	cd /usr/local/tomcat/
+	echo "Download tomcat 8"
+	wget http://ftp.byfly.by/pub/apache.org/tomcat/tomcat-8/v8.5.11/bin/apache-tomcat-8.5.11.tar.gz -d /usr/local/tomcat >/dev/null
+	echo "Unpack tomcat's archive"
 	sudo tar xf apache-tomcat-8.5.11.tar.gz -C /usr/local/tomcat
-	sudo chmod 755 -R /usr/local/tomcat/
-	echo "1"
+#	echo "Set vagrant as the owner /usr/local/tomcat/"
+#	sudo chown -R vagrant:vagrant /usr/local/tomcat/
 	sudo cp -rp /usr/local/tomcat/apache-tomcat-8.5.11/*  /usr/local/tomcat/
-	echo "2"
 	sudo rm -rf /usr/local/tomcat/apache-tomcat-8.5.11/
-	echo "3"
+	echo "Start Tomcat"
 	sudo chmod +x /usr/local/tomcat/bin/./startup.sh
 	sudo /usr/local/tomcat/bin/./startup.sh
 	
-	#cd /usr/local/tomcat/
-	#tar xzf apache-tomcat-8.5.11.tar.gz -C /usr/local/tomcat
-	#usr/local/sbin/./startup.sh
-	
-	
-
-
-
